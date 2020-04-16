@@ -13,6 +13,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
+            android:name=".CategoryInputActivity"
+            android:label="カテゴリ"
+            android:parentActivityName=".CategoryActivity"
+            android:theme="@style/AppTheme.NoActionBar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value="jp.techacademy.jouchan.wan.taskapp.CategoryActivity"/>
+        </activity>
+        <activity
             android:name=".CategoryActivity"
             android:label="カテゴリ"
             android:parentActivityName=".InputActivity"

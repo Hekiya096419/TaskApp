@@ -19,6 +19,7 @@ class InputActivity : AppCompatActivity() {
     private var mDay = 0
     private var mHour = 0
     private var mMinute = 0
+    private var mCategory: Category? = null
     private var mTask: Task? = null
 
     private val mOnDateClickListener = View.OnClickListener {
@@ -70,8 +71,10 @@ class InputActivity : AppCompatActivity() {
 
         val intent = intent
         val taskId = intent.getIntExtra(EXTRA_TASK, -1)
+        val categoryid = intent.getIntExtra(EXTRA_CATEGORY, -1)
         val realm = Realm.getDefaultInstance()
         mTask = realm.where(Task::class.java).equalTo("id", taskId).findFirst()
+        mCategory = realm.where(Category::class.java).equalTo("categoryid", categoryid).findFirst()
         realm.close()
 
         if (mTask == null) {
@@ -95,11 +98,14 @@ class InputActivity : AppCompatActivity() {
 
             val dateString = mYear.toString() + "/" + String.format("%02d", mMonth + 1) + "/" + String.format("%02d", mDay)
             val timeString = String.format("%02d", mHour) + ":" + String.format("%02d", mMinute)
-            val category = intent.getStringExtra("CategoryView")
 
             date_button.text = dateString
             times_button.text = timeString
-            category_button.text = category
+        }
+
+        if (mCategory != null){
+            val categoryString = mCategory!!.category
+            category_button.text = categoryString
         }
     }
 
@@ -124,14 +130,17 @@ class InputActivity : AppCompatActivity() {
 
         val title = title_edit_text.text.toString()
         val content = content_edit_text.text.toString()
+        val category = category_button.text.toString()
 
         mTask!!.title = title
         mTask!!.contents = content
         val calendar = GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute)
         val date = calendar.time
         mTask!!.date = date
+        mCategory!!.category = category
 
         realm.copyToRealmOrUpdate(mTask!!)
+        realm.copyToRealmOrUpdate(mCategory!!)
         realm.commitTransaction()
 
         realm.close()

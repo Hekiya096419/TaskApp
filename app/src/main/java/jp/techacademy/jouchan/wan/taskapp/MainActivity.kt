@@ -27,7 +27,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        fab.setOnClickListener {
+        fab1.setOnClickListener {
             val intent = Intent(this@MainActivity, InputActivity::class.java)
             startActivity(intent)
         }
