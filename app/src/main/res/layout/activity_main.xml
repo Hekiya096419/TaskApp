@@ -9,12 +9,25 @@
     tools:context=".MainActivity">
 
     <ListView
+        android:id="@+id/listview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/listview1"/>
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@android:dimen/app_icon_size" />
+
+    <EditText
+        android:id="@+id/search_edit_text"
+        android:layout_width="300dp"
+        android:layout_height="48dp"
+        android:layout_marginLeft="@android:dimen/notification_large_icon_height"/>
+
+    <Button
+        android:layout_width="60dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/search_button"
+        android:text="検索"/>
 
     <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab1"
+        android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"

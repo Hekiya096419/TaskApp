@@ -9,7 +9,13 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Intent
 import android.view.View
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import io.realm.Realm
+import io.realm.RealmChangeListener
+import io.realm.Sort
+import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_input.*
 import java.util.*
 
@@ -19,7 +25,6 @@ class InputActivity : AppCompatActivity() {
     private var mDay = 0
     private var mHour = 0
     private var mMinute = 0
-    private var mCategory: Category? = null
     private var mTask: Task? = null
 
     private val mOnDateClickListener = View.OnClickListener {
@@ -28,9 +33,13 @@ class InputActivity : AppCompatActivity() {
                 mYear = year
                 mMonth = month
                 mDay = dayOfMonth
-                val dateString = mYear.toString() + "/" + String.format("%02d", mMonth + 1) + "/" + String.format("%02d", mDay)
+                val dateString = mYear.toString() + "/" + String.format(
+                    "%02d",
+                    mMonth + 1
+                ) + "/" + String.format("%02d", mDay)
                 date_button.text = dateString
-            }, mYear, mMonth, mDay)
+            }, mYear, mMonth, mDay
+        )
         datePickerDialog.show()
     }
 
@@ -41,7 +50,8 @@ class InputActivity : AppCompatActivity() {
                 mMinute = minute
                 val timeString = String.format("%02d", mHour) + ":" + String.format("%02d", mMinute)
                 times_button.text = timeString
-            }, mHour, mMinute, false)
+            }, mHour, mMinute, false
+        )
         timePickerDialog.show()
     }
 
@@ -54,7 +64,7 @@ class InputActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_input)
 
-        val toolbar = findViewById<View>(R.id.toolbar1) as Toolbar
+        val toolbar = findViewById<View>(R.id.toolbar) as Toolbar
         setSupportActionBar(toolbar)
         if (supportActionBar != null) {
             supportActionBar!!.setDisplayHomeAsUpEnabled(true)
@@ -64,18 +74,10 @@ class InputActivity : AppCompatActivity() {
         times_button.setOnClickListener(mOnTimeClickListener)
         done_button.setOnClickListener(mOnDoneClickListener)
 
-        category_button.setOnClickListener{
-            val intent = Intent(this@InputActivity, CategoryActivity::class.java)
-            startActivity(intent)
-        }
-
         val intent = intent
         val taskId = intent.getIntExtra(EXTRA_TASK, -1)
-        val categoryid = intent.getIntExtra(EXTRA_CATEGORY, -1)
         val realm = Realm.getDefaultInstance()
         mTask = realm.where(Task::class.java).equalTo("id", taskId).findFirst()
-        mCategory = realm.where(Category::class.java).equalTo("categoryid", categoryid).findFirst()
-        realm.close()
 
         if (mTask == null) {
             val calendar = Calendar.getInstance()
@@ -87,6 +89,7 @@ class InputActivity : AppCompatActivity() {
         } else {
             title_edit_text.setText(mTask!!.title)
             content_edit_text.setText(mTask!!.contents)
+            category_edit_text.setText(mTask!!.category)
 
             val calendar = Calendar.getInstance()
             calendar.time = mTask!!.date
@@ -96,17 +99,16 @@ class InputActivity : AppCompatActivity() {
             mHour = calendar.get(Calendar.HOUR_OF_DAY)
             mMinute = calendar.get(Calendar.MINUTE)
 
-            val dateString = mYear.toString() + "/" + String.format("%02d", mMonth + 1) + "/" + String.format("%02d", mDay)
+            val dateString = mYear.toString() + "/" + String.format(
+                "%02d",
+                mMonth + 1
+            ) + "/" + String.format("%02d", mDay)
             val timeString = String.format("%02d", mHour) + ":" + String.format("%02d", mMinute)
 
             date_button.text = dateString
             times_button.text = timeString
         }
-
-        if (mCategory != null){
-            val categoryString = mCategory!!.category
-            category_button.text = categoryString
-        }
+        realm.close()
     }
 
     private fun addTask() {
@@ -130,17 +132,16 @@ class InputActivity : AppCompatActivity() {
 
         val title = title_edit_text.text.toString()
         val content = content_edit_text.text.toString()
-        val category = category_button.text.toString()
+        val category = category_edit_text.text.toString()
 
         mTask!!.title = title
         mTask!!.contents = content
         val calendar = GregorianCalendar(mYear, mMonth, mDay, mHour, mMinute)
         val date = calendar.time
         mTask!!.date = date
-        mCategory!!.category = category
+        mTask!!.category = category
 
         realm.copyToRealmOrUpdate(mTask!!)
-        realm.copyToRealmOrUpdate(mCategory!!)
         realm.commitTransaction()
 
         realm.close()

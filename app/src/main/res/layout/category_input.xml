@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
@@ -13,18 +13,18 @@
     tools:context=".CategoryActivity"
     tools:showIn="@layout/activity_category">
 
-    <ListView
+    <EditText
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/listview2"/>
+        android:layout_height="wrap_content"
+        android:id="@+id/category_edit_text"
+        android:hint="カテゴリ"/>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab2"
+    <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/plus"
-        app:backgroundTint="@color/colorPrimary"/>
+        android:layout_below="@+id/category_edit_text"
+        android:layout_alignParentRight="true"
+        android:id="@+id/done_button"
+        android:text="決定"/>
 
-</android.support.design.widget.CoordinatorLayout>
+</RelativeLayout>

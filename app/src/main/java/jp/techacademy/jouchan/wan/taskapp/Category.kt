@@ -8,5 +8,5 @@ open class Category : RealmObject(), Serializable {
     var category: String = ""
 
     @PrimaryKey
-    var categoryid: Int = 0
+    var id: Int = 0
 }

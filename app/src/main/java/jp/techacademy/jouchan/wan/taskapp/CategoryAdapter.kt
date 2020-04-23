@@ -19,7 +19,6 @@ class CategoryAdapter(context: Context): BaseAdapter() {
         val view: View = convertView ?: mLayoutInflater.inflate(android.R.layout.simple_expandable_list_item_2, null)
 
         val textView1 = view.findViewById<TextView>(android.R.id.text1)
-
         textView1.text = categorylist[position].category
 
         return  view
@@ -30,7 +29,7 @@ class CategoryAdapter(context: Context): BaseAdapter() {
     }
 
     override fun getItemId(position: Int): Long {
-        return categorylist[position].categoryid.toLong()
+        return categorylist[position].id.toLong()
     }
 
     override fun getCount(): Int {

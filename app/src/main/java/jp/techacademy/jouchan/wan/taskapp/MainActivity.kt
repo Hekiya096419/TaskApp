@@ -6,10 +6,8 @@ import android.support.v7.app.AlertDialog
 import android.content.Intent
 import android.app.AlarmManager
 import android.app.PendingIntent
+import io.realm.*
 import kotlinx.android.synthetic.main.activity_main.*
-import io.realm.Realm
-import io.realm.RealmChangeListener
-import io.realm.Sort
 
 const val EXTRA_TASK ="jp.techacademy.jouchan.wan.taskapp.TASK"
 
@@ -27,7 +25,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        fab1.setOnClickListener {
+        fab.setOnClickListener {
             val intent = Intent(this@MainActivity, InputActivity::class.java)
             startActivity(intent)
         }
@@ -35,16 +33,28 @@ class MainActivity : AppCompatActivity() {
         mRealm = Realm.getDefaultInstance()
         mRealm.addChangeListener(mRealmListener)
 
+        Realm.init(this)
+        val cofing = RealmConfiguration.Builder().name("category.realm").build()
+        Realm.setDefaultConfiguration(cofing)
+
+        search_button.setOnClickListener {
+            val taskRealmResults =
+                mRealm.where(Task::class.java).equalTo("category", search_edit_text.text.toString()).findAll()
+            mTaskAdapter.tasklist = mRealm.copyFromRealm(taskRealmResults)
+            listview.adapter = mTaskAdapter
+            mTaskAdapter.notifyDataSetChanged()
+        }
+
         mTaskAdapter = TaskAdapter(this@MainActivity)
 
-        listview1.setOnItemClickListener { parent, _, position, _ ->
+        listview.setOnItemClickListener { parent, _, position, _ ->
             val task = parent.adapter.getItem(position) as Task
             val intent = Intent(this@MainActivity, InputActivity::class.java)
             intent.putExtra(EXTRA_TASK, task.id)
             startActivity(intent)
         }
 
-        listview1.setOnItemLongClickListener { parent, _, position, _ ->
+        listview.setOnItemLongClickListener { parent, _, position, _ ->
             val task = parent.adapter.getItem(position) as Task
 
             val builder = AlertDialog.Builder(this@MainActivity)
@@ -52,7 +62,7 @@ class MainActivity : AppCompatActivity() {
             builder.setTitle("削除")
             builder.setMessage(task.title + "を削除しますか")
 
-            builder.setPositiveButton("OK"){_, _ ->
+            builder.setPositiveButton("OK") { _, _ ->
                 val results = mRealm.where(Task::class.java).equalTo("id", task.id).findAll()
 
                 mRealm.beginTransaction()
@@ -84,10 +94,10 @@ class MainActivity : AppCompatActivity() {
         reloadListView()
     }
 
-    private fun reloadListView(){
+    private fun reloadListView() {
         val taskRealmResults = mRealm.where(Task::class.java).findAll().sort("date", Sort.DESCENDING)
         mTaskAdapter.tasklist = mRealm.copyFromRealm(taskRealmResults)
-        listview1.adapter = mTaskAdapter
+        listview.adapter = mTaskAdapter
         mTaskAdapter.notifyDataSetChanged()
     }
 
